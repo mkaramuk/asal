@@ -4,4 +4,4 @@ Asel (Asel means honey in Arabic), is a Flutter application that aims to show an
 
 ## Compile
 
-Now I am learning Flutter and I think you don't need something else. You can compile and run the source code by typing `flutter run` on the terminal.  
+I think you don't need something else. You can compile and run the source code by typing `flutter run` on the terminal. If you encounter an error, please open an issue.
