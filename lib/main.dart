@@ -1,4 +1,4 @@
-import 'package:asel/router/routes.dart';
+import 'package:asal/router/routes.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,9 +12,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Asel',
-	  routes: routes,
-	  initialRoute: '/main',
+      title: 'Asal',
+      routes: routes,
+      initialRoute: '/main',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

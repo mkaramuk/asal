@@ -1,4 +1,4 @@
-import 'package:asel/widgets/pray_time_box.dart';
+import 'package:asal/widgets/pray_time_box.dart';
 import 'package:flutter/material.dart';
 
 class MainPage extends StatefulWidget {
