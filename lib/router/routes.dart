@@ -1,3 +1,3 @@
-import 'package:asal/pages/main_page.dart';
+import 'package:asal/pages/homepage/homepage_view.dart';
 
-var routes = {'/main': (_) => const MainPage()};
+var routes = {'/homepage': (_) => const HomepageView()};

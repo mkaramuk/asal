@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class PrayTimeBox extends StatefulWidget {
-  final String timeName;
+class TimeCard extends StatelessWidget {
+  final String title;
   final DateTime time;
 
-  const PrayTimeBox({super.key, required this.timeName, required this.time});
+  const TimeCard({super.key, required this.time, required this.title});
 
-  @override
-  State<PrayTimeBox> createState() => _PrayTimeBoxState();
-}
-
-class _PrayTimeBoxState extends State<PrayTimeBox> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -19,26 +14,28 @@ class _PrayTimeBoxState extends State<PrayTimeBox> {
       alignment: Alignment.center,
       decoration: BoxDecoration(
           boxShadow: const [
-            BoxShadow(color: Colors.blueGrey, spreadRadius: 5, blurRadius: 7, offset: Offset(0, 3))
+            BoxShadow(
+                color: Color.fromARGB(255, 90, 90, 90),
+                spreadRadius: 1,
+                blurRadius: 15,
+                offset: Offset(0, 3))
           ],
-          color: const Color.fromARGB(255, 64, 235, 115),
-          border: Border.all(width: 2, color: const Color.fromARGB(255, 128, 128, 128)),
+          color: Color.fromARGB(255, 196, 196, 196),
+          border: Border.all(width: 2, color: Color.fromARGB(255, 182, 182, 182)),
           borderRadius: const BorderRadius.all(Radius.circular(10))),
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
             Text(
-              widget.timeName,
+              title,
               style: const TextStyle(
                   fontSize: 20, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
             ),
             const Divider(color: Colors.black, thickness: 1),
-            Text(DateFormat.Hm().format(widget.time),
+            Text(DateFormat.Hm().format(time),
                 style: const TextStyle(
-                    fontSize: 23,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 0, 42, 156)))
+                    fontSize: 23, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)))
           ],
         ),
       ),
