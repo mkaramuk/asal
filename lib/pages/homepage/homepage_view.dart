@@ -1,3 +1,4 @@
+import 'package:asal/dialogs/update_times/update_times_view.dart';
 import 'package:asal/pages/homepage/homepage_cubit.dart';
 import 'package:asal/widgets/time_card/time_card_view.dart';
 import 'package:flutter/material.dart';
@@ -35,10 +36,25 @@ class HomepageView extends StatelessWidget {
 
   Scaffold _buildScaffold(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        shadowColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+              onPressed: () {
+                showDialog(context: context, builder: (context) => UpdateTimesDialog);
+              },
+              icon: const Icon(
+                Icons.settings,
+                color: Colors.black,
+                size: 30,
+              ))
+        ],
+      ),
       backgroundColor: Colors.transparent,
       body: Column(children: [
         SizedBox(
-          height: MediaQuery.of(context).size.height / 5,
+          height: MediaQuery.of(context).size.height / 10,
         ),
         _buildTimeRow(
             context,
