@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Asal',
       routes: routes,
+      debugShowCheckedModeBanner: false,
       initialRoute: '/homepage',
       theme: ThemeData(
         primarySwatch: Colors.blue,
