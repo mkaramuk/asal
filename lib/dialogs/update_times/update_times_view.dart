@@ -15,63 +15,65 @@ class UpdateTimesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => UpdateTimesCubit(),
+      create: (context) => UpdateTimesCubit(context),
       child: BlocConsumer<UpdateTimesCubit, UpdateTimesState>(
         listener: (context, state) {},
         builder: (context, state) {
-          return Wrap(
-            children: [
-              Column(
+          return WillPopScope(
+              onWillPop: context.read<UpdateTimesCubit>().onBack,
+              child: Wrap(
                 children: [
-                  _buildTextRow("Ülke:"),
-                  _buildDropdown(
-                      context,
-                      context.read<UpdateTimesCubit>().country,
-                      context.read<UpdateTimesCubit>().countriesLoading,
-                      context.read<UpdateTimesCubit>().countries,
-                      context.read<UpdateTimesCubit>().onChangeCountry,
-                      "ülke"),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  _buildTextRow("Şehir:"),
-                  _buildDropdown(
-                      context,
-                      context.read<UpdateTimesCubit>().city,
-                      context.read<UpdateTimesCubit>().citiesLoading,
-                      context.read<UpdateTimesCubit>().cities,
-                      context.read<UpdateTimesCubit>().onChangeCity,
-                      "ülke"),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  _buildTextRow("İlçe:"),
-                  _buildDropdown(
-                      context,
-                      context.read<UpdateTimesCubit>().region,
-                      context.read<UpdateTimesCubit>().regionsLoading,
-                      context.read<UpdateTimesCubit>().regions,
-                      context.read<UpdateTimesCubit>().onChangeRegion,
-                      "şehir"),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  Column(
                     children: [
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: const ButtonStyle(
-                            backgroundColor: MaterialStatePropertyAll(Colors.grey),
-                            foregroundColor: MaterialStatePropertyAll(Colors.black)),
-                        child: const Text("Güncelle"),
+                      _buildTextRow("Ülke:"),
+                      _buildDropdown(
+                          context,
+                          context.read<UpdateTimesCubit>().country,
+                          context.read<UpdateTimesCubit>().countriesLoading,
+                          context.read<UpdateTimesCubit>().countries,
+                          context.read<UpdateTimesCubit>().onChangeCountry,
+                          "ülke"),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      _buildTextRow("Şehir:"),
+                      _buildDropdown(
+                          context,
+                          context.read<UpdateTimesCubit>().city,
+                          context.read<UpdateTimesCubit>().citiesLoading,
+                          context.read<UpdateTimesCubit>().cities,
+                          context.read<UpdateTimesCubit>().onChangeCity,
+                          "ülke"),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      _buildTextRow("İlçe:"),
+                      _buildDropdown(
+                          context,
+                          context.read<UpdateTimesCubit>().region,
+                          context.read<UpdateTimesCubit>().regionsLoading,
+                          context.read<UpdateTimesCubit>().regions,
+                          context.read<UpdateTimesCubit>().onChangeRegion,
+                          "şehir"),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          ElevatedButton(
+                            onPressed: context.read<UpdateTimesCubit>().updateTimes,
+                            style: const ButtonStyle(
+                                backgroundColor: MaterialStatePropertyAll(Colors.grey),
+                                foregroundColor: MaterialStatePropertyAll(Colors.black)),
+                            child: const Text("Güncelle"),
+                          )
+                        ],
                       )
                     ],
                   )
                 ],
-              )
-            ],
-          );
+              ));
         },
       ),
     );

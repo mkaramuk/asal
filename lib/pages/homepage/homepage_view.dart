@@ -10,7 +10,7 @@ class HomepageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomepageCubit(),
+      create: (context) => HomepageCubit(context),
       child: BlocConsumer<HomepageCubit, HomepageState>(
         listener: (context, state) {},
         builder: (context, state) {
@@ -41,9 +41,7 @@ class HomepageView extends StatelessWidget {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-              onPressed: () {
-                showDialog(context: context, builder: (context) => UpdateTimesDialog);
-              },
+              onPressed: context.read<HomepageCubit>().showUpdateTimesDialog,
               icon: const Icon(
                 Icons.settings,
                 color: Colors.black,

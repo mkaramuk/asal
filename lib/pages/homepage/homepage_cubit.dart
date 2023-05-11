@@ -1,21 +1,36 @@
 import 'dart:async';
 
+import 'package:asal/dialogs/update_times/update_times_view.dart';
 import 'package:asal/extensions/date_extensions.dart';
-import 'package:asal/models/calendar.dart';
-import 'package:asal/models/day.dart';
-import 'package:asal/services/praytimesservice.dart';
+import 'package:asal/models/calendar_model.dart';
+import 'package:asal/models/day_model.dart';
+import 'package:asal/services/config_service.dart';
+import 'package:asal/services/praytimes_service.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class HomepageCubit extends Cubit<HomepageState> {
-  HomepageCubit() : super(HomepageLoading()) {
+  HomepageCubit(this.context) : super(HomepageLoading()) {
     _loadCalendar();
   }
-  Calendar? calendar;
+  BuildContext context;
+  CalendarModel? calendar;
   late Timer timer;
 
+  Future<bool?> showUpdateTimesDialog() async {
+    return showDialog<bool>(context: context, builder: (context) => UpdateTimesDialog);
+  }
+
   Future<void> _loadCalendar() async {
-    calendar = await PrayTimeService.getTimes();
+    bool? updated = false;
+    calendar = await ConfigService.loadCalendar();
+    if (calendar == null) {
+      do {
+        updated = await Future.microtask(() => showUpdateTimesDialog());
+      } while (updated != null && !updated);
+      calendar = await ConfigService.loadCalendar();
+    }
     timer = Timer.periodic(const Duration(seconds: 1), (Timer _) {
       emit(HomepageLoaded());
     });
@@ -32,7 +47,7 @@ class HomepageCubit extends Cubit<HomepageState> {
 
   DateTime get nextTime {
     DateTime now = DateTime.now();
-    Day today = calendar!.today();
+    DayModel today = calendar!.today();
     if (now.isBetween(today.fajr, today.sunrise)) {
       return today.sunrise;
     } else if (now.isBetween(today.sunrise, today.dhuhr)) {

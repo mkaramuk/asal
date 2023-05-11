@@ -12,7 +12,7 @@ DateTime _parseWithDate(String time) {
   return DateTime(now.year, now.month, now.day, date.hour, date.minute);
 }
 
-class Day {
+class DayModel {
   final DateTime date;
   final DateTime fajr;
   final DateTime sunrise;
@@ -21,9 +21,9 @@ class Day {
   final DateTime maghrib;
   final DateTime isha;
 
-  Day(this.date, this.fajr, this.sunrise, this.dhuhr, this.asr, this.maghrib, this.isha);
+  DayModel(this.date, this.fajr, this.sunrise, this.dhuhr, this.asr, this.maghrib, this.isha);
 
-  Day.fromJson(Map<String, dynamic> json)
+  DayModel.fromJson(Map<String, dynamic> json)
       : date = DateFormat("dd-MM-yyyy").parse(json["date"]["gregorian"]["date"]),
         fajr = _parseWithDate(_parseTime(json["timings"]["Fajr"])),
         sunrise = _parseWithDate(_parseTime(json["timings"]["Sunrise"])),
@@ -31,4 +31,18 @@ class Day {
         asr = _parseWithDate(_parseTime(json["timings"]["Asr"])),
         maghrib = _parseWithDate(_parseTime(json["timings"]["Maghrib"])),
         isha = _parseWithDate(_parseTime(json["timings"]["Isha"]));
+
+  Map<String, dynamic> toJson() => {
+        "date": {
+          "gregorian": {"date": DateFormat("dd-MM-yyyy").format(date)}
+        },
+        "timings": {
+          "Fajr": _timeFormat.format(fajr),
+          "Sunrise": _timeFormat.format(sunrise),
+          "Dhuhr": _timeFormat.format(dhuhr),
+          "Asr": _timeFormat.format(asr),
+          "Maghrib": _timeFormat.format(maghrib),
+          "Isha": _timeFormat.format(isha),
+        }
+      };
 }

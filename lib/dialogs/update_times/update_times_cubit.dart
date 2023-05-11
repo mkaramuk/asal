@@ -1,10 +1,17 @@
-import 'package:asal/services/addressservice.dart';
+import 'package:asal/models/calendar_model.dart';
+import 'package:asal/services/address_service.dart';
+import 'package:asal/services/config_service.dart';
+import 'package:asal/services/praytimes_service.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class UpdateTimesCubit extends Cubit<UpdateTimesState> {
-  UpdateTimesCubit() : super(UpdateTimesInitial()) {
+  UpdateTimesCubit(this.context) : super(UpdateTimesInitial()) {
     loadCountries();
   }
+
+  BuildContext context;
 
   List<String> countries = [];
   List<String> cities = [];
@@ -86,6 +93,27 @@ class UpdateTimesCubit extends Cubit<UpdateTimesState> {
     if (countriesLoading || citiesLoading || regionsLoading) return;
     region = selectedRegion;
     emit(UpdateTimesInitial());
+  }
+
+  Future<bool> onBack() async {
+    Navigator.pop(context, false);
+    return true;
+  }
+
+  Future<void> updateTimes() async {
+    if (country == "" || city == "" || region == "") {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Lütfen konum bilgilerini girin.")));
+      return;
+    }
+
+    EasyLoading.show(
+        status: "Vakitler güncelleniyor", dismissOnTap: false, maskType: EasyLoadingMaskType.black);
+    DateTime now = DateTime.now();
+    await ConfigService.saveCalendar(
+        await PrayTimeService.getTimes(now.year, now.month, country, city, region));
+    EasyLoading.dismiss();
+    Future.microtask(() => Navigator.pop(context, true));
   }
 }
 
