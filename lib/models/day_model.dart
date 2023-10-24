@@ -1,3 +1,4 @@
+import 'package:asal/models/time_model.dart';
 import 'package:intl/intl.dart';
 
 String _parseTime(String time) {
@@ -13,36 +14,40 @@ DateTime _parseWithDate(String time) {
 }
 
 class DayModel {
-  final DateTime date;
-  final DateTime fajr;
-  final DateTime sunrise;
-  final DateTime dhuhr;
-  final DateTime asr;
-  final DateTime maghrib;
-  final DateTime isha;
+  final TimeModel date = TimeModel(DateTime.now(), "Tarih");
+  final TimeModel fajr = TimeModel(DateTime.now(), "İmsak", image: "assets/images/evening.jpg");
+  final TimeModel sunrise = TimeModel(DateTime.now(), "Güneş", image: "assets/images/morning.jpg");
+  final TimeModel dhuhr = TimeModel(DateTime.now(), "Öğle", image: "assets/images/noon.jpg");
+  final TimeModel asr = TimeModel(DateTime.now(), "İkindi", image: "assets/images/morning.jpg");
+  final TimeModel maghrib = TimeModel(DateTime.now(), "Akşam", image: "assets/images/evening.jpg");
+  final TimeModel isha = TimeModel(DateTime.now(), "Yatsı", image: "assets/images/night.jpg");
 
-  DayModel(this.date, this.fajr, this.sunrise, this.dhuhr, this.asr, this.maghrib, this.isha);
+  DayModel();
 
-  DayModel.fromJson(Map<String, dynamic> json)
-      : date = DateFormat("dd-MM-yyyy").parse(json["date"]["gregorian"]["date"]),
-        fajr = _parseWithDate(_parseTime(json["timings"]["Fajr"])),
-        sunrise = _parseWithDate(_parseTime(json["timings"]["Sunrise"])),
-        dhuhr = _parseWithDate(_parseTime(json["timings"]["Dhuhr"])),
-        asr = _parseWithDate(_parseTime(json["timings"]["Asr"])),
-        maghrib = _parseWithDate(_parseTime(json["timings"]["Maghrib"])),
-        isha = _parseWithDate(_parseTime(json["timings"]["Isha"]));
+  factory DayModel.fromJson(Map<String, dynamic> json) {
+    DayModel day = DayModel();
+
+    day.date.value = DateFormat("dd-MM-yyyy").parse(json["date"]["gregorian"]["date"]);
+    day.fajr.value = _parseWithDate(_parseTime(json["timings"]["Fajr"]));
+    day.sunrise.value = _parseWithDate(_parseTime(json["timings"]["Sunrise"]));
+    day.dhuhr.value = _parseWithDate(_parseTime(json["timings"]["Dhuhr"]));
+    day.asr.value = _parseWithDate(_parseTime(json["timings"]["Asr"]));
+    day.maghrib.value = _parseWithDate(_parseTime(json["timings"]["Maghrib"]));
+    day.isha.value = _parseWithDate(_parseTime(json["timings"]["Isha"]));
+    return day;
+  }
 
   Map<String, dynamic> toJson() => {
         "date": {
-          "gregorian": {"date": DateFormat("dd-MM-yyyy").format(date)}
+          "gregorian": {"date": DateFormat("dd-MM-yyyy").format(date.value)}
         },
         "timings": {
-          "Fajr": _timeFormat.format(fajr),
-          "Sunrise": _timeFormat.format(sunrise),
-          "Dhuhr": _timeFormat.format(dhuhr),
-          "Asr": _timeFormat.format(asr),
-          "Maghrib": _timeFormat.format(maghrib),
-          "Isha": _timeFormat.format(isha),
+          "Fajr": _timeFormat.format(fajr.value),
+          "Sunrise": _timeFormat.format(sunrise.value),
+          "Dhuhr": _timeFormat.format(dhuhr.value),
+          "Asr": _timeFormat.format(asr.value),
+          "Maghrib": _timeFormat.format(maghrib.value),
+          "Isha": _timeFormat.format(isha.value),
         }
       };
 }

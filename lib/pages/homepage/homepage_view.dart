@@ -1,8 +1,13 @@
 import 'package:asal/dialogs/update_times/update_times_view.dart';
+import 'package:asal/extensions/date_extensions.dart';
+import 'package:asal/models/time_model.dart';
 import 'package:asal/pages/homepage/homepage_cubit.dart';
-import 'package:asal/widgets/time_card/time_card_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomepageView extends StatelessWidget {
   const HomepageView({super.key});
@@ -18,7 +23,7 @@ class HomepageView extends StatelessWidget {
             return _buildProgressIndicator();
           } else /* if (state is HomepageLoaded) */ {
             return Stack(
-              children: [_buildBackground(context), _buildScaffold(context)],
+              children: [_buildScaffold(context)],
             );
           }
         },
@@ -51,81 +56,151 @@ class HomepageView extends StatelessWidget {
       ),
       backgroundColor: Colors.transparent,
       body: Column(children: [
-        SizedBox(
-          height: MediaQuery.of(context).size.height / 10,
+        Center(
+          child: _buildTimeSlider(context),
         ),
-        _buildTimeRow(
-            context,
-            TimeCard(title: "İmsak", time: context.read<HomepageCubit>().calendar!.today().fajr),
-            TimeCard(
-                title: "Güneş", time: context.read<HomepageCubit>().calendar!.today().sunrise)),
-        const SizedBox(
-          height: 30,
+        Container(
+          margin: const EdgeInsets.all(10),
+          child: Text("Vaktin çıkmasına:", style: GoogleFonts.robotoCondensed(fontSize: 30)),
         ),
-        _buildTimeRow(
-            context,
-            TimeCard(title: "Öğle", time: context.read<HomepageCubit>().calendar!.today().dhuhr),
-            TimeCard(title: "İkindi", time: context.read<HomepageCubit>().calendar!.today().asr)),
-        const SizedBox(
-          height: 30,
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                margin: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(100)),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black12,
+                        spreadRadius: 0.2,
+                        blurRadius: 7,
+                        offset: Offset(0, 2))
+                  ],
+                ),
+                child: Center(
+                  child: Text(context.read<HomepageCubit>().timeLeft,
+                      style:
+                          GoogleFonts.robotoCondensed(fontWeight: FontWeight.bold, fontSize: 25)),
+                ),
+              ),
+            ),
+          ],
         ),
-        _buildTimeRow(
-            context,
-            TimeCard(title: "Akşam", time: context.read<HomepageCubit>().calendar!.today().maghrib),
-            TimeCard(title: "Yatsı", time: context.read<HomepageCubit>().calendar!.today().isha)),
-        const Spacer(),
-        _buildTimeLeftCard(context),
+        const Spacer(
+          flex: 2,
+        ),
+        Row(
+          children: [Expanded(child: _buildTimeTable(context))],
+        )
       ]),
     );
   }
 
-  Image _buildBackground(BuildContext context) {
-    return Image.asset(
-      "assets/images/background.jpg",
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      fit: BoxFit.cover,
-    );
+  DataTable _buildTimeTable(BuildContext context) {
+    var cubit = context.read<HomepageCubit>();
+
+    style(String timeName) {
+      return TextStyle(color: cubit.nextTime.name == timeName ? Colors.white : Colors.black);
+    }
+
+    return DataTable(
+        columns: const [DataColumn(label: Text("Vakit")), DataColumn(label: Text("Saat"))],
+        rows: cubit.prayTimes
+            .map((e) => DataRow(
+                  cells: [
+                    DataCell(Text(e.name, style: style(e.name))),
+                    DataCell(Text(DateFormat.Hm().format(e.value), style: style(e.name))),
+                  ],
+                  color: MaterialStateColor.resolveWith((states) {
+                    if (e.name == cubit.nextTime.name) {
+                      return Colors.lightGreen;
+                    }
+                    return Colors.transparent;
+                  }),
+                ))
+            .toList());
   }
 
-  Container _buildTimeLeftCard(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-          boxShadow: const [
-            BoxShadow(color: Colors.blueGrey, spreadRadius: 5, blurRadius: 7, offset: Offset(0, 3))
-          ],
-          color: Color.fromARGB(255, 223, 223, 223),
-          border: Border.all(width: 2, color: const Color.fromARGB(255, 128, 128, 128)),
-          borderRadius: const BorderRadius.all(Radius.circular(10))),
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            const Text(
-              "Vaktin Çıkmasına",
-              style:
-                  TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
-            ),
-            const Divider(color: Colors.black, thickness: 1),
-            Text(context.read<HomepageCubit>().timeLeft,
-                style: const TextStyle(
-                    fontSize: 23, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)))
-          ],
-        ),
-      ),
-    );
-  }
+  Widget _buildTimeCard(BuildContext context, TimeModel model) {
+    var cubit = context.read<HomepageCubit>();
+    var image = DecorationImage(
+        image: AssetImage(model.image.isNotEmpty ? model.image : "assets/images/evening.jpg"),
+        fit: BoxFit.fill);
 
-  Widget _buildTimeRow(BuildContext context, TimeCard left, TimeCard right) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    Border? drawBorder() {
+      if (model.name == cubit.nextTime.name) {
+        return Border.all(
+          color: Colors.lightGreen,
+          style: BorderStyle.solid,
+          width: 2,
+        );
+      }
+      return null;
+    }
+
+    return Stack(
       children: [
-        left,
-        SizedBox(
-          width: MediaQuery.of(context).size.width / 4,
+        Container(
+            margin: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                image: image,
+                border: drawBorder(),
+                boxShadow: const [
+                  BoxShadow(
+                      color: Colors.black12, spreadRadius: 0.2, blurRadius: 7, offset: Offset(0, 2))
+                ],
+                borderRadius: const BorderRadius.all(Radius.circular(10))),
+            child: Container(
+              padding: const EdgeInsets.all(30),
+              decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.2),
+                  borderRadius: const BorderRadius.all(Radius.circular(10))),
+              child: Column(children: [
+                Row(
+                  children: [
+                    Text(model.name,
+                        style: const TextStyle(
+                            fontSize: 23, fontWeight: FontWeight.bold, color: Colors.white)),
+                  ],
+                ),
+                Row(children: [
+                  Text(DateFormat.Hm().format(model.value),
+                      style: const TextStyle(
+                          fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white))
+                ]),
+              ]),
+            )),
+      ],
+    );
+  }
+
+  Widget _buildTimeSlider(BuildContext context) {
+    var cubit = context.read<HomepageCubit>();
+
+    return Column(
+      children: [
+        CarouselSlider(
+          carouselController: cubit.carouselController,
+          options: CarouselOptions(
+            initialPage: context.read<HomepageCubit>().cardIndex,
+            height: 160,
+            viewportFraction: 1,
+            enlargeCenterPage: true,
+            disableCenter: true,
+            enlargeFactor: 0,
+            onPageChanged: context.read<HomepageCubit>().onCardChanged,
+          ),
+          items: cubit.prayTimes.map((e) => _buildTimeCard(context, e)).toList(),
         ),
-        right,
+        AnimatedSmoothIndicator(
+          activeIndex: context.read<HomepageCubit>().cardIndex,
+          count: cubit.prayTimes.length,
+          effect: const ExpandingDotsEffect(
+              dotWidth: 10, dotHeight: 10, activeDotColor: Colors.lightGreen),
+        )
       ],
     );
   }

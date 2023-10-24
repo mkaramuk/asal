@@ -3,15 +3,24 @@ import 'dart:io';
 import 'package:asal/router/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:window_manager/window_manager.dart';
 
 Future<void> main() async {
+  GoogleFonts.config.allowRuntimeFetching = false;
   WidgetsFlutterBinding.ensureInitialized();
   EasyLoading.instance.userInteractions = false;
 
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     windowManager.setTitle("Asal");
-    windowManager.setMaximumSize(const Size(300, 700));
+    windowManager.setMaximumSize(const Size(400, 700));
+    windowManager.setMinimumSize(const Size(400, 700));
+
+    if (Platform.isWindows) {
+      windowManager.setIcon("assets/icons/icon.ico");
+    } else {
+      windowManager.setIcon("assets/icons/icon.png");
+    }
   }
 
   runApp(const AsalApp());

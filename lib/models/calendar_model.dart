@@ -16,9 +16,9 @@ class CalendarModel {
   DayModel today() {
     DateTime now = DateTime.now();
     return days.firstWhere((element) {
-      return element.date.day == now.day &&
-          element.date.month == now.month &&
-          element.date.year == now.year;
+      return element.date.value.day == now.day &&
+          element.date.value.month == now.month &&
+          element.date.value.year == now.year;
     });
   }
 }
