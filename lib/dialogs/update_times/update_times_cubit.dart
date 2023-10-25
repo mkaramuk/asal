@@ -1,4 +1,3 @@
-import 'package:asal/models/calendar_model.dart';
 import 'package:asal/services/address_service.dart';
 import 'package:asal/services/config_service.dart';
 import 'package:asal/services/praytimes_service.dart';
